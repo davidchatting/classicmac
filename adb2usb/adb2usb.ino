@@ -18,6 +18,8 @@
    https://github.com/osresearch/classicmac/
 */
 
+
+#include "Mouse.h"
 #include "keymap.h"
 
 #define ADB_PORT PORTD
@@ -37,46 +39,36 @@
 
 #define LAYOUT_UNITED_KINGDOM
 
-static void
-print_u8(
-  uint8_t x
-)
-{
+static void print_u8(uint8_t x) {
   Serial.print((x >> 4) & 0xF, HEX);
   Serial.print((x >> 0) & 0xF, HEX);
 }
 
 
-static void led_state(int x)
-{
+static void led_state(int x) {
   if (x)
     PORTD |= 1 << 6;
   else
     PORTD &= ~(1 << 6);
 }
 
-static void led_init(void)
-{
+static void led_init(void) {
   DDRD |= 1 << 6;
 }
 
 
-static void trigger_state(int x)
-{
+static void trigger_state(int x) {
   if (x)
     PORTD |= 1 << 3;
   else
     PORTD &= ~(1 << 3);
 }
 
-static void trigger_init(void)
-{
+static void trigger_init(void) {
   DDRD |= 1 << 3;
 }
 
-static void
-adb_drive(int value)
-{
+static void adb_drive(int value) {
   if (value)
   {
     // activate pull up
@@ -89,20 +81,11 @@ adb_drive(int value)
   }
 }
 
-
-static void
-adb_idle(void)
-{
+static void adb_idle(void) {
   adb_drive(1);
 }
 
-
-
-static void
-adb_send_byte(
-  uint8_t byte
-)
-{
+static void adb_send_byte(uint8_t byte) {
   // eight data bits, pulse width encoded
   for (int i = 0 ; i < 8 ; i++)
   {
@@ -122,19 +105,11 @@ adb_send_byte(
   }
 }
 
-
-static inline volatile uint8_t
-adb_input(void)
-{
+static inline volatile uint8_t adb_input(void) {
   return (ADB_INPUT & (1 << ADB_PIN)) ? 1 : 0;
 }
 
-
-static uint8_t
-adb_send(
-  uint8_t byte
-)
-{
+static uint8_t adb_send(uint8_t byte) {
   cli();
 
   // attention signal -- low for 800 usec
@@ -168,11 +143,7 @@ adb_send(
   return 0;
 }
 
-
-
-static uint8_t
-adb_read_byte(void)
-{
+static uint8_t adb_read_byte(void) {
   uint8_t byte = 0;
 
   for (uint8_t i = 0 ; i < 8 ; i++)
@@ -199,13 +170,7 @@ adb_read_byte(void)
   return byte;
 }
 
-
-static uint8_t
-adb_read(
-  uint8_t * buf,
-  uint8_t len
-)
-{
+static uint8_t adb_read(uint8_t * buf, uint8_t len) {
   // Wait up to a few hundred usec to see if there is a start bit
   adb_idle();
 
@@ -239,10 +204,7 @@ start_bit:
   return 1;
 }
 
-
-static void
-adb_reset(void)
-{
+static void adb_reset(void) {
   adb_drive(0);
   delayMicroseconds(3000);
   adb_drive(1);
@@ -263,11 +225,9 @@ adb_reset(void)
   }
 }
 
-
-void setup(void)
-{  
+void setup(void) {  
   //Keyboard.begin();
-  //Mouse.begin();
+  Mouse.begin();
 
   led_init();
   trigger_init();
@@ -276,8 +236,8 @@ void setup(void)
   adb_idle();
 
   Serial.begin(115200);
-  while (!Serial);
-  Serial.println("adb2usb");
+  //while (!Serial);
+  //Serial.println("adb2usb");
 
   // initiate a reset cycle
   adb_reset();
@@ -301,9 +261,7 @@ void setup(void)
   }
 }
 
-
-void loop(void)
-{
+void loop(void) {
   uint8_t buf[2];
 
   // read from the keyboard
@@ -392,17 +350,17 @@ void loop(void)
     Serial.print(m2);
     Serial.println();
 
-    //Mouse.move(dy * 4, dx * 4);
+    Mouse.move(dy*4, dx*4, 0);
 
     static uint8_t m1_held;
 
     if (m1 && !m1_held)
     {
-      //Mouse.press(MOUSE_LEFT);
+       Mouse.press(MOUSE_LEFT);
       m1_held = 1;
     } else if (!m1 && m1_held)
     {
-      //Mouse.release(MOUSE_LEFT);
+      Mouse.release(MOUSE_LEFT);
       m1_held = 0;
     }
   }
