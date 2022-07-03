@@ -19,7 +19,8 @@
 */
 
 
-#include "Mouse.h"
+#include <Mouse.h>
+#include <Keyboard.h>
 #include "keymap.h"
 
 #define ADB_PORT PORTD
@@ -226,7 +227,7 @@ static void adb_reset(void) {
 }
 
 void setup(void) {  
-  //Keyboard.begin();
+  Keyboard.begin();
   Mouse.begin();
 
   led_init();
@@ -285,10 +286,10 @@ void loop(void) {
     if (!kc0)
       Serial.print('?');
     else if (r0) {
-      //Keyboard.release(kc0);
+      Keyboard.release(kc0);
     }
     else {
-      //Keyboard.press(kc0);
+      Keyboard.press(kc0);
     }
 
     if (buf[1] != 0xFF)
@@ -307,10 +308,10 @@ void loop(void) {
         Serial.print("?");
       }
       else if (r1) {
-        //Keyboard.release(kc1);
+        Keyboard.release(kc1);
       }
       else {
-        //Keyboard.press(kc1);
+        Keyboard.press(kc1);
       }
     }
 
