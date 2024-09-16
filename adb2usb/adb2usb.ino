@@ -19,15 +19,15 @@
 */
 
 
-#include <Mouse.h>
-#include <Keyboard.h>
+//#include <Mouse.h>
+//#include <Keyboard.h>
 #include "keymap.h"
 
-#define ADB_PORT PORTD
-#define ADB_DDR DDRD
-#define ADB_INPUT PIND
-#define ADB_PIN 4
-
+    
+#define ADB_PORT PORTD  //PORT - Port pin registers whether the pin is a HIGH or a LOW
+#define ADB_DDR DDRD    //DDR - Use this to tell whether the Pin is an INPUT or OUTPUT
+#define ADB_INPUT PIND  //PIND - The Port D Input Pins Register - read only
+#define ADB_PIN 4       //PD4 - data pin
 
 #define ADB_CMD_FLUSH	0x01
 #define ADB_CMD_LISTEN	0x08
@@ -48,13 +48,13 @@ static void print_u8(uint8_t x) {
 
 static void led_state(int x) {
   if (x)
-    PORTD |= 1 << 6;
+    PORTD |= 1 << 6;    //01000000
   else
-    PORTD &= ~(1 << 6);
+    PORTD &= ~(1 << 6); //10111111
 }
 
 static void led_init(void) {
-  DDRD |= 1 << 6;
+  DDRD |= 1 << 6;       //01000000
 }
 
 
@@ -73,7 +73,7 @@ static void adb_drive(int value) {
   if (value)
   {
     // activate pull up
-    ADB_DDR  &= ~(1 << ADB_PIN);
+    ADB_DDR  &= ~(1 << ADB_PIN);  //00010000
     ADB_PORT |=  (1 << ADB_PIN);
   } else {
     // drive low
@@ -227,8 +227,8 @@ static void adb_reset(void) {
 }
 
 void setup(void) {  
-  Keyboard.begin();
-  Mouse.begin();
+  //Keyboard.begin();
+  //Mouse.begin();
 
   led_init();
   trigger_init();
@@ -286,10 +286,10 @@ void loop(void) {
     if (!kc0)
       Serial.print('?');
     else if (r0) {
-      Keyboard.release(kc0);
+      //Keyboard.release(kc0);
     }
     else {
-      Keyboard.press(kc0);
+      //Keyboard.press(kc0);
     }
 
     if (buf[1] != 0xFF)
@@ -308,10 +308,10 @@ void loop(void) {
         Serial.print("?");
       }
       else if (r1) {
-        Keyboard.release(kc1);
+        //Keyboard.release(kc1);
       }
       else {
-        Keyboard.press(kc1);
+        //Keyboard.press(kc1);
       }
     }
 
@@ -351,17 +351,17 @@ void loop(void) {
     Serial.print(m2);
     Serial.println();
 
-    Mouse.move(dy*4, dx*4, 0);
+    //Mouse.move(dy*4, dx*4, 0);
 
     static uint8_t m1_held;
 
     if (m1 && !m1_held)
     {
-       Mouse.press(MOUSE_LEFT);
+       //Mouse.press(MOUSE_LEFT);
       m1_held = 1;
     } else if (!m1 && m1_held)
     {
-      Mouse.release(MOUSE_LEFT);
+      //Mouse.release(MOUSE_LEFT);
       m1_held = 0;
     }
   }
